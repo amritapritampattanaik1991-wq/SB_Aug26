@@ -1,0 +1,13 @@
+       d8888                       d8b 888             
+      d88888                       Y8P 888             
+     d88P888                           888             
+    d88P 888 88888b.d88b.  888d888 888 888888  8888b.  
+   d88P  888 888 "888 "88b 888P"   888 888        "88b 
+  d88P   888 888  888  888 888     888 888    .d888888 
+ d8888888888 888  888  888 888     888 Y88b.  888  888 
+d88P     888 888  888  888 888     888  "Y888 "Y888888 
+                                                       
+                                                       
+                                                       
+${application.title} ${application.version}
+Powered by Spring Boot ${spring-boot.version}
