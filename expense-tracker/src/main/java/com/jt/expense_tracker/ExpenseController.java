@@ -6,6 +6,12 @@ import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,14 +24,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ExpenseController {
   private final JdbcTemplate jdbcTemplate;
+  private static final String EXPENSES_TABLE = "expenses";
 
   // public ExpenseController(JdbcTemplate jdbcTemplate) {
   // this.jdbcTemplate = jdbcTemplate;
   // }
 
-  @RequestMapping(value = "/expenses", method = RequestMethod.GET)
+  // @RequestMapping(value = "/expenses", method = RequestMethod.GET)
+  @GetMapping("/expense")
   public List<Expense> getExpenses() {
-    String sql = "SELECT * FROM expenses";
+    String sql = "SELECT * FROM %s".formatted(EXPENSES_TABLE);
 
     // List<Expense> expenses = new ArrayList<>();
     // jdbcTemplate.query(sql, (resultSet) -> {
@@ -50,5 +58,36 @@ public class ExpenseController {
     // return expenses;
 
     return jdbcTemplate.query(sql, new BeanPropertyRowMapper<Expense>(Expense.class));
+  }
+  // @RequestMapping(value = "/expenses/{id}", method = RequestMethod.GET)
+  @GetMapping("/expense/{id}")
+  public Expense getExpenseById(@PathVariable int id) {
+    // System.out.println("Id is " +id);
+    var sql = "SELECT * FROM %s where id=?" .formatted(EXPENSES_TABLE);
+    Expense expense = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Expense.class), id );
+    return expense;
+  }
+
+  // @RequestMapping(value = "/expenses", method = RequestMethod.POST)
+  @PostMapping("/expense")
+  public Expense createExpense(@RequestBody Expense expense) {
+    var sql = "INSERT INTO %s(title, category, price, date) VALUES (?, ?, ?, ?)"
+                                              .formatted(EXPENSES_TABLE);
+    jdbcTemplate.update(sql, expense.getTitle(), expense.getCategory(), expense.getPrice(), expense.getDate());
+    return expense;
+  }
+  // @RequestMapping(value = "/expenses/{id}", method = RequestMethod.GET)
+  @DeleteMapping("/expense/{id}")
+  public void deleteExpenseById(@PathVariable int id) {
+    String sql = "DELETE FROM %s WHERE id =?" .formatted(EXPENSES_TABLE);
+    jdbcTemplate.update(sql,id);
+  }
+
+  @PutMapping("/expense")
+  public Expense updateExpense(@RequestBody Expense expense) {
+  var sql = "UPDATE %s SET title=?, category=?, price=?, date=? WHERE id=?".formatted(EXPENSES_TABLE);
+  jdbcTemplate.update(sql, expense.getTitle(), expense.getCategory(), expense.getPrice(), expense.getDate(), expense.getId());
+  Expense updatExpense = getExpenseById(expense.getId());
+  return updatExpense;
   }
 }
