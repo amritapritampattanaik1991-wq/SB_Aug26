@@ -1,5 +1,6 @@
 package com.jt.expense_tracker;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
@@ -24,6 +25,4 @@ public class Expense {
   private String category;
   private double price;
   private LocalDate date;
-
-  
 }
