@@ -15,13 +15,16 @@ import org.springframework.stereotype.Service;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
-    public Page<Category> getAllCategories(int pageNumber, int pageSize) {
+    public Page<Category> getAllCategories(String search, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest
                 .of(pageNumber, pageSize, Sort.by("categoryName"));
         return categoryRepository.findAll(pageable);
     }
 
     public Category createCategory(CategoryRequest categoryRequest) {
+       if (categoryRepository.existsByCategoryNameIgnoreCase(categoryRequest.categoryName())){
+           throw new RuntimeException("Category Name already exists");
+        }
         Category newCategory = Category.builder()
                 .categoryName(categoryRequest.categoryName())
                         .build();
